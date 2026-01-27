@@ -3,6 +3,7 @@ package com.guilherme.adopted.models;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +22,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private UUID id;
 
     private String name;
 
@@ -37,14 +38,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    
     public String getName() {
         return name;
     }
@@ -94,6 +88,18 @@ public class User implements UserDetails {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+
+
+    public UUID getId() {
+        return id;
+    }
+
+
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
 }
