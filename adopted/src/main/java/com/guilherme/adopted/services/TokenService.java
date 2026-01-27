@@ -18,7 +18,7 @@ public class TokenService implements ITokenService {
 
     private Algorithm algorithm;
 
-    public TokenService(Algorithm algorithm, @Value("${jwt.secret}") String secretKey) {
+    public TokenService(@Value("${jwt.secret}") String secretKey) {
         this.algorithm = Algorithm.HMAC256(secretKey);
     }
 
