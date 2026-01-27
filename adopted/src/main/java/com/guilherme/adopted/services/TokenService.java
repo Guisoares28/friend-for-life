@@ -1,5 +1,7 @@
 package com.guilherme.adopted.services;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,12 @@ public class TokenService implements ITokenService {
     }
 
     @Override
-    public String generatedToken() {
+    public String generatedToken(String email) {
         String token = "";
         try{
             token = JWT.create()
             .withIssuer("adopted")
+            .withClaim("email", email)
             .sign(this.algorithm);
         }catch(JWTCreationException exception){
             //tratar
@@ -46,5 +49,11 @@ public class TokenService implements ITokenService {
             //tratar
         }
         return decodedJWT;
+    }
+
+    @Override
+    public String getEmail(String token) {
+        DecodedJWT decodedJWT = verifyToken(token);
+        return decodedJWT.getClaim("email").asString();
     }
 }
