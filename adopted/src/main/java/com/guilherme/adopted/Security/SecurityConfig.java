@@ -23,7 +23,7 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/h2-console").permitAll()
+                .requestMatchers("/auth/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 
             )

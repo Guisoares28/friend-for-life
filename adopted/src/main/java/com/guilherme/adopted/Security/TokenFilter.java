@@ -41,6 +41,11 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+                if(request.getRequestURI().contains("/h2-console")){
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 String token = getHeader(request);
                 String email = "";
                 User user = null;
