@@ -47,9 +47,4 @@ public class TokenService implements ITokenService {
         }
         return decodedJWT;
     }
-
-
-
-
-
 }
