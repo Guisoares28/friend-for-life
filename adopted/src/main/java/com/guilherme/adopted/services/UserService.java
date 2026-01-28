@@ -27,7 +27,8 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponseDto create(UserRequestDto userRequestDto) {
-        
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllUsers'");
     }
 
     @Override
