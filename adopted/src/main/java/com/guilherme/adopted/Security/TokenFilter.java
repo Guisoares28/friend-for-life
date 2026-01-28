@@ -22,16 +22,13 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class TokenFilter extends OncePerRequestFilter {
 
-    private AuthenticationManager authenticationManager;
-
     private ITokenService tokenService;
 
     private UserRepository userRepository;
 
     
-    public TokenFilter(AuthenticationManager authenticationManager, ITokenService tokenService,
+    public TokenFilter(ITokenService tokenService,
             UserRepository userRepository) {
-        this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.userRepository = userRepository;
     }
@@ -41,45 +38,21 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-                if(request.getRequestURI().contains("/h2-console")){
+               String token = getHeader(request);
+
+               if(token != null){
+                String email = this.tokenService.getEmail(token);
+                Optional<User> user = this.userRepository.findByEmail(email);
+
+                if(!user.isEmpty()){
+                    authenticate(user.get());
                     filterChain.doFilter(request, response);
                     return;
                 }
 
-                String token = getHeader(request);
-                String email = "";
-                User user = null;
-                UsernamePasswordAuthenticationToken authentication = null;
-                Optional<User> userFound = null;
+               }
 
-                if(token == null){
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("""
-                            {
-                                "Status": 401,
-                                "Error" : "Unauthorized",
-                                "message": "Token invalid"
-                            }
-                            """);
-                        return;
-                }
-
-                if(token != null ){
-                    email = this.tokenService.getEmail(token); //já valida o token
-                    userFound = this.userRepository.findByEmail(email);
-                }
-                
-                if(userFound != null && !userFound.isEmpty()){
-                    user = userFound.get();
-                    authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-
-                filterChain.doFilter(request, response);
+               filterChain.doFilter(request, response);
     }
 
 
@@ -90,6 +63,11 @@ public class TokenFilter extends OncePerRequestFilter {
             return header.substring(7);
         }
         return null;
+    }
+
+    public void authenticate(User user){
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 }
