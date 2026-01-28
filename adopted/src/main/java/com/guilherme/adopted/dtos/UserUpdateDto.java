@@ -1,10 +1,10 @@
 package com.guilherme.adopted.dtos;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 public record UserUpdateDto(
     String name,
-    Date dateOfBirth,
+    LocalDate dateOfBirth,
     String telephone
 ) {
 
