@@ -1,6 +1,7 @@
 package com.guilherme.adopted.models;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class User implements UserDetails {
 
     private String name;
 
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(unique = true)
     private String email;
@@ -82,15 +83,13 @@ public class User implements UserDetails {
         return this.email;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
-
-
 
     public UUID getId() {
         return id;

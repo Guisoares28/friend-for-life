@@ -13,7 +13,7 @@ public interface IUserService {
 
     List<UserResponseDto> getAllUsers();
 
-    UserResponseDto update(UserUpdateDto userUpdateDto);
+    UserResponseDto update(UserUpdateDto userUpdateDto, String email);
 
     UserResponseDto deleteById(UUID id);
 

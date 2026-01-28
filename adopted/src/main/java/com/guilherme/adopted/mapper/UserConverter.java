@@ -4,11 +4,13 @@ import org.springframework.stereotype.Component;
 
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
+import com.guilherme.adopted.dtos.UserUpdateDto;
 import com.guilherme.adopted.interfaces.IConverter;
+import com.guilherme.adopted.interfaces.IUpdateConversor;
 import com.guilherme.adopted.models.User;
 
 @Component
-public class UserConverter implements IConverter<UserRequestDto, User, UserResponseDto> {
+public class UserConverter implements IConverter<UserRequestDto, User, UserResponseDto>, IUpdateConversor<UserUpdateDto, User> {
 
     @Override
     public User toEntity(UserRequestDto requestDto) {
@@ -34,7 +36,21 @@ public class UserConverter implements IConverter<UserRequestDto, User, UserRespo
         return userResponseDto;
     }
 
-  
+    @Override
+    public void toEntityUpdate(UserUpdateDto updateDto, User entity) {
 
+        if(updateDto.name() != null){
+            entity.setName(updateDto.name());
+        }
+
+        if(updateDto.dateOfBirth() != null){
+            entity.setDateOfBirth(updateDto.dateOfBirth());
+        }
+
+        if(updateDto.telephone() != null){
+            entity.setTelephone(updateDto.telephone());
+        }
+    
+    }
 
 }

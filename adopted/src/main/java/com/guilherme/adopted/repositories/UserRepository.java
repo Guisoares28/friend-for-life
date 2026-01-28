@@ -11,4 +11,6 @@ import com.guilherme.adopted.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
+
+    Boolean existsByEmail(String email);
 }
