@@ -1,7 +1,5 @@
 package com.guilherme.adopted.services;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
