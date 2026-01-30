@@ -3,10 +3,11 @@ package com.guilherme.adopted.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.guilherme.adopted.dtos.UserRequestDto;
+import com.guilherme.adopted.dtos.UserResponseDto;
 import com.guilherme.adopted.exception.DuplicateDateException;
 import com.guilherme.adopted.mapper.UserConverter;
 import com.guilherme.adopted.models.User;
 import com.guilherme.adopted.repositories.UserRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -34,62 +37,72 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Mock
     private UserConverter userConverter;
 
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserValidationService userValidation;
+
     @Captor
-    private ArgumentCaptor<User> usercaptor;
-
+    private ArgumentCaptor<User> userCaptor;
+   
     @Test
-    void shouldReturnDuplicateDateExceptionWhenSavingADuplicateUser(){
-        UserRequestDto userRequesDto = new UserRequestDto(
-            "guilherme soares",
+    void shouldCreateUserSuccessfully(){
+        //ARRANGE
+        UserRequestDto dto = new UserRequestDto(
+            "Guilherme",
             LocalDate.of(1999, 2, 28),
-            "gui.soares2899@gmail.com",
-            "11994210778",
-            "gui123"
+            "gui@email.com",
+            "119999999",
+            "123"
         );
 
-        when(userRepository.existsByEmail(userRequesDto.email()))
-        .thenReturn(true);
+         User user = new User();
 
-        DuplicateDateException exception = 
-        assertThrows(
-            DuplicateDateException.class,
-        () -> userService.create(userRequesDto));
+        UserResponseDto responseDto = new UserResponseDto(
+            null, "Guilherme", null, dto.email(), dto.telephone(), null
+        );
 
-        assertEquals("this email is already in use", exception.getMessage());
+        //ACT
+        when(userConverter.toEntity(dto)).thenReturn(user);
+        when(passwordEncoder.encode(dto.password())).thenReturn("encrypted");
+        when(userConverter.toResponse(user)).thenReturn(responseDto);
 
-        verify(userRepository, never()).save(any());
+        UserResponseDto result = userService.create(dto);
+
+        verify(userValidation).validateDuplicateData(dto.email());
+        verify(userConverter).toEntity(dto);
+        verify(passwordEncoder).encode(dto.password());
+        verify(userRepository).save(userCaptor.capture());
+
+        assertEquals("encrypted", userCaptor.getValue().getPassword());
+        assertEquals(responseDto, result);
+    }
+
+    @Test
+    void shoulThrowExceptionWhenEmailIsDuplicated(){
+
+        UserRequestDto dto = new UserRequestDto(
+        "Guilherme",
+        LocalDate.of(1999, 2, 28),
+        "gui@email.com",
+        "119999999",
+        "123"
+        );
+
+        doThrow(new DuplicateDateException("this email is already in use"))
+        .when(userValidation)
+        .validateDuplicateData(dto.email());
+
+        assertThrows(DuplicateDateException.class,
+            () -> userService.create(dto)
+        );
+
         verify(userConverter, never()).toEntity(any());
-        verify(bCryptPasswordEncoder, never()).encode(any());
+        verify(passwordEncoder, never()).encode(any());
+        verify(userRepository, never()).save(any());
     }
-
-    @Test
-    void shouldSaveTheUserInTheDatabase(){
-        UserRequestDto userRequesDto = new UserRequestDto(
-            "guilherme soares",
-            LocalDate.of(1999, 2, 28),
-            "gui.soares2899@gmail.com",
-            "11994210778",
-            "gui123"
-        );
-
-        when(userRepository.existsByEmail(userRequesDto.email())).thenReturn(false);
-        when(userConverter.toEntity(userRequesDto)).thenReturn(new User());
-        when(bCryptPasswordEncoder.encode(userRequesDto.password())).thenReturn(userRequesDto.password().concat("encripted"));
-
-        userService.create(userRequesDto);
-
-        verify(userRepository).save(usercaptor.capture());
-        verify(userConverter).toEntity(userRequesDto);
-        verify(bCryptPasswordEncoder).encode(userRequesDto.password());
-
-        User userSaved = usercaptor.getValue();
-
-        assertEquals("gui123encripted", userSaved.getPassword());
-
-    }
+    
 }

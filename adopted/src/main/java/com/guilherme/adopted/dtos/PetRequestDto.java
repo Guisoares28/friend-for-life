@@ -1,37 +1,44 @@
 package com.guilherme.adopted.dtos;
 
-import java.time.LocalDate;
-
+import com.guilherme.adopted.enums.SizeEnum;
+import com.guilherme.adopted.enums.SpeciesEnum;
 import com.guilherme.adopted.interfaces.Request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
-public record UserRequestDto(
+public record PetRequestDto(
+
     @NotBlank
     @NotEmpty
     @NotNull
     String name,
 
     @NotNull
-    LocalDate dateOfBirth,
+    Integer approximateAge,
 
-    @Email
-    @NotBlank
+    Float weight,
+
+    String microchip,
+
     @NotNull
-    @NotEmpty
-    String email,
+    SpeciesEnum speciesEnum,
 
-    @Size(max = 11)
-    String telephone,
+    @NotNull
+    SizeEnum sizeEnum,
+
+    @NotNull
+    String race,
 
     @NotBlank
     @NotEmpty
     @NotNull
-    String password
+    String address,
+
+    @NotNull
+    String description
+
 ) implements Request {
 
 }

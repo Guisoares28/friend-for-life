@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
-import com.guilherme.adopted.interfaces.IUserService;
+import com.guilherme.adopted.interfaces.CrudService;
+import com.guilherme.adopted.interfaces.UserServiceInterface;
 
 import jakarta.validation.Valid;
 
@@ -17,9 +18,9 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    private IUserService userService;
+    private UserServiceInterface userService;
     
-    public UserController(IUserService userService){
+    public UserController(UserServiceInterface userService){
         this.userService = userService;
     }
 
@@ -28,4 +29,6 @@ public class UserController {
         UserResponseDto userResponseDto = userService.create(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
     }
+
+    
 }
