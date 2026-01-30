@@ -1,6 +1,5 @@
 package com.guilherme.adopted.enums;
 
 public enum SizeEnum {
-    LITTLE, MEDIUM, LARGE
-
+    SMALL, MEDIUM, LARGE
 }

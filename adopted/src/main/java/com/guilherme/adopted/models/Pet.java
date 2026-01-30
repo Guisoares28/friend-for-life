@@ -2,18 +2,22 @@ package com.guilherme.adopted.models;
 
 import com.guilherme.adopted.enums.SizeEnum;
 import com.guilherme.adopted.enums.SpeciesEnum;
+import com.guilherme.adopted.interfaces.EntityInterface;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_pet")
-public class Pet {
+public class Pet implements EntityInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +42,10 @@ public class Pet {
     private String address;
 
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Pet() {
     }
@@ -122,5 +130,12 @@ public class Pet {
         this.description = description;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
     
 }

@@ -8,17 +8,20 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.guilherme.adopted.interfaces.EntityInterface;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_usuario")
-public class User implements UserDetails {
+public class User implements UserDetails, EntityInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,10 +38,12 @@ public class User implements UserDetails {
 
     private String password;
 
+    @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY)
+    private List<Pet> pets;
+
     public User() {
     }
 
-    
     public String getName() {
         return name;
     }
@@ -98,6 +103,14 @@ public class User implements UserDetails {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public List<Pet> getPets() {
+        return pets;
+    }
+
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
     }
 
 }

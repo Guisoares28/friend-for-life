@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
 import com.guilherme.adopted.dtos.UserUpdateDto;
+import com.guilherme.adopted.exception.DuplicateDateException;
 import com.guilherme.adopted.exception.NoInformationFoundException;
-import com.guilherme.adopted.interfaces.IUserValidation;
+import com.guilherme.adopted.interfaces.UserConverterInterface;
 import com.guilherme.adopted.interfaces.UserServiceInterface;
-import com.guilherme.adopted.mapper.UserConverter;
 import com.guilherme.adopted.models.User;
 import com.guilherme.adopted.repositories.UserRepository;
 
@@ -24,22 +24,22 @@ public class UserService implements UserServiceInterface {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private UserConverter userConverter;
+    private UserConverterInterface userConverter;
 
-    private IUserValidation userValidation;
-
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserConverter userConverter,
-        IUserValidation userValidation
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, 
+        UserConverterInterface userConverter
     ) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userConverter = userConverter;
-        this.userValidation = userValidation;
     }
 
     @Override
     public UserResponseDto create(UserRequestDto requestObject) {
-        this.userValidation.validateDuplicateData(requestObject.email()); //Lança uma DuplicateException;
+        
+        if(this.userRepository.existsByEmail(requestObject.email())){
+            throw new DuplicateDateException("this email is already in use");
+        }
 
         User user = userConverter.toEntity(requestObject);
         user.setPassword(bCryptPasswordEncoder.encode(requestObject.password()));

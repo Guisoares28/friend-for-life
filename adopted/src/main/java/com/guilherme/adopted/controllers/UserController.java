@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
-import com.guilherme.adopted.interfaces.CrudService;
 import com.guilherme.adopted.interfaces.UserServiceInterface;
 
 import jakarta.validation.Valid;
