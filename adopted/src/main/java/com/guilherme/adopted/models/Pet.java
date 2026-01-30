@@ -43,11 +43,22 @@ public class Pet implements EntityInterface {
 
     private String description;
 
+    private Boolean isAdopted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     public Pet() {
+        this.isAdopted = false;
+    }
+
+    public Boolean getIsAdopted() {
+        return isAdopted;
+    }
+
+    public void setIsAdopted(Boolean isAdopted) {
+        this.isAdopted = isAdopted;
     }
 
     public Long getId() {
