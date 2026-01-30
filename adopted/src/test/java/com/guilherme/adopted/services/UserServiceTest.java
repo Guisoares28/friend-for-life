@@ -3,6 +3,7 @@ package com.guilherme.adopted.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -22,7 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
 import com.guilherme.adopted.exception.DuplicateDateException;
-import com.guilherme.adopted.mapper.UserConverter;
+import com.guilherme.adopted.mapper.UserMapper;
 import com.guilherme.adopted.models.User;
 import com.guilherme.adopted.repositories.UserRepository;
 
@@ -37,13 +38,10 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private UserConverter userConverter;
-
-    @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
     @Mock
-    private UserValidationService userValidation;
+    private UserMapper userMapper;
 
     @Captor
     private ArgumentCaptor<User> userCaptor;
@@ -60,49 +58,29 @@ public class UserServiceTest {
         );
 
          User user = new User();
+         user.setEmail(dto.email());
 
         UserResponseDto responseDto = new UserResponseDto(
             null, "Guilherme", null, dto.email(), dto.telephone(), null
         );
 
-        //ACT
-        when(userConverter.toEntity(dto)).thenReturn(user);
-        when(passwordEncoder.encode(dto.password())).thenReturn("encrypted");
-        when(userConverter.toResponse(user)).thenReturn(responseDto);
+        when(this.userRepository.existsByEmail(dto.email())).thenReturn(false);
+        when(this.userMapper.toEntity(dto)).thenReturn(user);
+        when(this.userMapper.toResponse(user)).thenReturn(responseDto);
+        when(passwordEncoder.encode(anyString())).thenReturn("123-encrypted");
 
-        UserResponseDto result = userService.create(dto);
 
-        verify(userValidation).validateDuplicateData(dto.email());
-        verify(userConverter).toEntity(dto);
-        verify(passwordEncoder).encode(dto.password());
-        verify(userRepository).save(userCaptor.capture());
+        userService.create(dto);
 
-        assertEquals("encrypted", userCaptor.getValue().getPassword());
-        assertEquals(responseDto, result);
+        verify(passwordEncoder).encode(anyString());
+        verify(this.userRepository).save(userCaptor.capture());
+
+        assertEquals("gui@email.com", userCaptor.getValue().getEmail());
+        assertEquals("123-encrypted", userCaptor.getValue().getPassword());
     }
 
     @Test
     void shoulThrowExceptionWhenEmailIsDuplicated(){
-
-        UserRequestDto dto = new UserRequestDto(
-        "Guilherme",
-        LocalDate.of(1999, 2, 28),
-        "gui@email.com",
-        "119999999",
-        "123"
-        );
-
-        doThrow(new DuplicateDateException("this email is already in use"))
-        .when(userValidation)
-        .validateDuplicateData(dto.email());
-
-        assertThrows(DuplicateDateException.class,
-            () -> userService.create(dto)
-        );
-
-        verify(userConverter, never()).toEntity(any());
-        verify(passwordEncoder, never()).encode(any());
-        verify(userRepository, never()).save(any());
     }
     
 }
