@@ -1,6 +1,6 @@
 package com.guilherme.adopted.interfaces;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CrudService<REQ extends Request, RES extends Response, U extends Update, T> {
 
@@ -8,7 +8,7 @@ public interface CrudService<REQ extends Request, RES extends Response, U extend
 
     RES get(T id);
 
-    List<RES> getAll();
+    Page<RES> getAll(int page, int size);
 
     RES update(U updateObject, T id);
 

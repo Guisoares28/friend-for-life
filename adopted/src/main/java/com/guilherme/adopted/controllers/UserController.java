@@ -1,14 +1,20 @@
 package com.guilherme.adopted.controllers;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guilherme.adopted.dtos.UserRequestDto;
 import com.guilherme.adopted.dtos.UserResponseDto;
+import com.guilherme.adopted.dtos.UserUpdateDto;
 import com.guilherme.adopted.interfaces.UserServiceInterface;
 
 import jakarta.validation.Valid;
@@ -27,6 +33,12 @@ public class UserController {
     public ResponseEntity<UserResponseDto> create(@RequestBody @Valid UserRequestDto userRequestDto) {
         UserResponseDto userResponseDto = userService.create(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDto> update(@RequestBody UserUpdateDto userUpdateDto, @PathVariable UUID id) {
+        UserResponseDto user = this.userService.update(userUpdateDto, id);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     

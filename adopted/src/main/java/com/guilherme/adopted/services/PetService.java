@@ -1,6 +1,7 @@
 package com.guilherme.adopted.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,14 +62,31 @@ public class PetService implements PetServiceInterface {
 
     @Override
     public PetResponseDto update(PetUpdateDto updateObject, Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        Pet petFound = this.petRepository.findById(id)
+        .orElseThrow(() -> new NoInformationFoundException("Pet not found with id provided"));
+
+        Optional.ofNullable(updateObject.name()).ifPresent(petFound::setName);
+        Optional.ofNullable(updateObject.approximateAge()).ifPresent(petFound::setApproximateAge);
+        Optional.ofNullable(updateObject.weight()).ifPresent(petFound::setWeight);
+        Optional.ofNullable(updateObject.microchip()).ifPresent(petFound::setmicrochip);
+        Optional.ofNullable(updateObject.speciesEnum()).ifPresent(petFound::setEspecieEnum);
+        Optional.ofNullable(updateObject.sizeEnum()).ifPresent(petFound::setSizeEnum);
+        Optional.ofNullable(updateObject.race()).ifPresent(petFound::setRace);
+        Optional.ofNullable(updateObject.address()).ifPresent(petFound::setAddress);
+        Optional.ofNullable(updateObject.description()).ifPresent(petFound::setDescription);
+
+        Pet updatedPet = this.petRepository.save(petFound);
+        return this.petConverter.toResponse(updatedPet);
     }
 
     @Override
     public PetResponseDto delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Pet pet = this.petRepository.findById(id)
+        .orElseThrow(() -> new NoInformationFoundException("Pet not found with id provided"));
+
+        this.petRepository.delete(pet);
+
+        return this.petConverter.toResponse(pet);
     }
 
 }
