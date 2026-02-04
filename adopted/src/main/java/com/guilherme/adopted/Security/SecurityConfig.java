@@ -2,6 +2,7 @@ package com.guilherme.adopted.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,6 +32,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/h2-console/**", "/api/v1/user", "/api/v1/auth").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/pet").permitAll()
                 .anyRequest().authenticated()
                 
             )

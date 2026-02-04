@@ -56,4 +56,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
     }
 
+    @ExceptionHandler(NoInformationFoundException.class)
+    public ResponseEntity<ApiError> noInformationFoundError(NoInformationFoundException ex, HttpServletRequest request){
+        ApiError apiError = new ApiError(
+            400,
+            ex.getMessage(),
+            request.getRequestURI(),
+            null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    } 
 }
